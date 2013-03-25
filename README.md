@@ -17,6 +17,7 @@ Classes present to the user:
 - this class also acts as "subscriber" in the notion of Publisher-Subscriber pattern.
 
 Example:
+<pre>
 // Object with iframe instances
 var iframes = { 
 	// Creates left iframe and keeps the instance of the class for later use
@@ -100,3 +101,4 @@ N.CMS.Events.addEventListener(builder.iframes.right, "append", function() {
 });
 builder.iframes.right.append();
 */
+</pre>
