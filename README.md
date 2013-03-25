@@ -51,7 +51,6 @@ var iframes = {
 		name : "content", 
 		src : "content.html",
 		// comment "src" attribute and uncomment "html" one to see the difference
-		//html : "<h1>Around the World in 80 Days</h1><p>It was at least certain that Phileas Fogg had not absented himself from London for many years.  Those who were honoured by a better acquaintance with him than the rest, declared that nobody could pretend to have ever seen him anywhere else.  His sole pastimes were reading the papers and playing whist.  He often won at this game, which, as a silent one, harmonised with his nature; but his winnings never went into his purse, being reserved as a fund for his charities.  Mr. Fogg played, not to win, but for the sake of playing.  The game was in his eyes a contest, a struggle with a difficulty, yet a motionless, unwearying struggle, congenial to his tastes.</p>",
 		width : (window.innerWidth || document.documentElement.clientWidth) - 350 + "px", 
 		height : (window.innerHeight || document.documentElement.clientHeight) - 80 + "px", 
 		top : "40px", 
@@ -87,7 +86,7 @@ N.CMS.Events.dispatchEvent(iframes.left, "create");
 /* Another way of dynamicall add additional iframe. Uncomment this group to see result
 builder.iframes.right = new N.CMS.IFrame({
 	name : "right", 
-	html : "<h1>I am right iframe</h1>", 
+	html : "&lt;h1&gt;I am right iframe&lt;/h1&gt;", 
 	width: "350px", 
 	height : "100%", 
 	minWidth : "40px", 
