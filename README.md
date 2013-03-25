@@ -1,12 +1,12 @@
 Robin javascript API
 
-Files required:
-1) Needle.js - Needle JS library
-2) Initializator.js - initializes the API
-
+Files required: <br />
+1) Needle.js - Needle JS library 
+2) Initializator.js - initializes the API 
+<br />
 API namespace: N.CMS
 
-Classes present to the user:
+Classes present to the user:<br /> 
 1) N.CMS.Builders - class for building the view of iframes and keeps track of them.
  - this class acts as "publisher" in the notion of Publisher-Subscriber pattern.
  
