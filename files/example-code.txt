@@ -1,0 +1,27 @@
+﻿
+	// index.html
+	var viewport = new N.UI.Viewport();
+	var ifr = new N.UI.iFrames( { 'top', 'left' } );
+	viewport.render( { ifr } );
+
+	// index.html
+	var My.Controller = new N.UI.Controller();
+	var My.Models = new N.UI.Models();
+	var My.Views = new N.UI.Views();
+	My.Controller(My.Models, My.Views);
+	
+	var references = ifr.iframes;
+	var top = references.top;
+
+	// top iframe tabs
+	1) parent.base.content.createNewIframe( {} );
+	2) parent.base.events.dispatchEvent('createNewIframe', {});
+
+	// left iframes
+	left: parent.base.events.refresh();
+
+
+	1) Object Oriented
+	2) MVC
+
+
