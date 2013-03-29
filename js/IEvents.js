@@ -1,5 +1,6 @@
 N.plug("IEvents", function() {
-Events = N.Events;
+// In order this assigment to work we need to do some extra tests
+//Events = N.Events;
 /**
  * @class Events 
  * @description Intention of this class is to serve as Subscriber and DOM events manipulator

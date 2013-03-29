@@ -1,22 +1,22 @@
 <h1>Robin javascript API</h1>
 
-Files required: <br />
-1) Needle.js - Needle JS library <br />
-2) Initializator.js - initializes the API <br />
+<strong>Files required:</strong> <br />
+1) <em>Needle.js</em> - Needle JS library <br />
+2) <em>Initializator.js</em> - initializes the API <br />
 <br />
-<strong>API namespace:</strong> N.CMS
+<strong>API namespace:</strong> <em>N.CMS</em>
 
 <strong>Classes present to the user:</strong><br /> 
-1) N.CMS.Builders - class for building the view of iframes and keeps track of them.
+1) <em>N.CMS.Builders</em> - class for building the view of iframes and keeping track of them.
  - this class acts as "publisher" in the notion of Publisher-Subscriber pattern.
  
-2) N.CMS.IFrame - class for creating, styling and appending single iframe to the document.
+2) <em>N.CMS.IFrame</em> - class for creating, styling and appending single iframe to the document.
 - this class acts as "publisher" in the notion of Publisher-Subscriber pattern.
 
-3) N.CMS.Events - class for handling DOM and Custom events.
+3) <em>N.CMS.Events</em> - class for handling DOM and Custom events.
 - this class also acts as "subscriber" in the notion of Publisher-Subscriber pattern.
 
-Example:
+<strong>Example:</strong>
 <pre>
 // Object with iframe instances
 var iframes = { 

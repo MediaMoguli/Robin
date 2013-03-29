@@ -45,7 +45,8 @@ IFrame.prototype.IFrame = function(config) {
 		this.element = null;
 		this.config = config;
 		this.name = config.name;
-		this.create(config).style(config);
+		this.create()/*.style()*/;
+		_onload.call(this);
 	}
 };
 /**
@@ -57,8 +58,21 @@ IFrame.prototype.IFrame = function(config) {
  * @returns IFrame instance
  */
 IFrame.prototype.create = function() {
-	this.element = N.DOM.createPlus("iframe", new AttributesObject(this.config));
+	this.element = N.DOM.create("iframe");
 	this.push("create");
+	return this;
+};
+/**
+ * @method attributes
+ * @access public
+ * 
+ * @description Sets iframe attributes and calls subscriber callbacks
+ * 
+ * @returns IFrame instance
+ */
+IFrame.prototype.attributes = function(config) {
+	N.DOM.setAttributes(this.element, new AttributesObject((typeof config !== "undefined") ? N.objectMerge({}, this.config, config) : this.config));
+	this.push("attributes");
 	return this;
 };
 /**
@@ -69,8 +83,8 @@ IFrame.prototype.create = function() {
  * 
  * @returns IFrame instance
  */
-IFrame.prototype.style = function() {
-	N.DOM.setStyle(this.element, new StyleObject(this.config));
+IFrame.prototype.style = function(config) {
+	N.DOM.setStyle(this.element, new StyleObject((typeof config !== "undefined") ? N.objectMerge({}, config, this.config) : this.config));
 	this.push("style");
 	return this;
 };
@@ -82,15 +96,30 @@ IFrame.prototype.style = function() {
  * 
  * @returns IFrame instance
  */
-IFrame.prototype.append = function() {
+IFrame.prototype.append = function(callback) {
 	N.DOM.add(this.element, document.body);
-	if (!this.config.src && this.config.html) {
-		var that = this;
-		setTimeout(function() { that.element.contentWindow.document.body.innerHTML = that.config.html; }, 50);
-	}
+	(typeof callback === "function") && callback.call(this);
 	this.push("append");
+	
 	return this;
 };
+/**
+ * @method _onload
+ * @access private
+ * 
+ * @description Listens for load event and add HTML content if provided
+ * 
+ * @returns void
+ */
+function _onload() {
+	if (!this.config.src && this.config.html) {
+		var that = this;
+		
+		N.CMS.Events.addDOMListener(this.element, "load", function() {
+			that.element.contentWindow.document.body.innerHTML = that.config.html;	
+		});
+	}
+}
 /**
  * @constructor StyleObject
  * @access private
@@ -119,7 +148,8 @@ function StyleObject(config) {
 function AttributesObject(config) {
 	var i = _attributes.length;
 	this.frameBorder = "0";
-	
+	//(config.src) && (config.src = (config.src.indexOf));
+		
 	while (i--) { (_attributes[i] in config) && (this[_attributes[i]] = config[_attributes[i]]); }
 }
 
