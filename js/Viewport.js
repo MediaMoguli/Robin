@@ -11,7 +11,7 @@ Viewport.WIDTH = (window.innerWidth || document.documentElement.clientWidth);
 Viewport.HEIGHT = (window.innerHeight || document.documentElement.clientHeight);
 Viewport.HASH = "#!/";
 /**
- * @class Viewport (singleton)
+ * @class Viewport (singleton class)
  * 
  */
 function Viewport(iframes) {
@@ -32,7 +32,10 @@ function _Viewport(iframes) {
 	this.iframes = {};
 	this.next = { top : 0, bottom : 0, left : 0, right : 0 };
 	this.reset();
-	(N.isArray(iframes)) && _store.call(this, iframes);
+	if (N.isArray(iframes)) { 
+		_store.call(this, iframes);
+		_onresize.call(this);
+	}
 };
 /**
  * @method build
@@ -40,7 +43,7 @@ function _Viewport(iframes) {
  * 
  * @description Appends each iframe to the document and calls subscriber callbacks
  * 
- * @returns void
+ * @returns Viewport instance
  */
 Viewport.prototype.build = function() {
 	var i;
@@ -48,6 +51,7 @@ Viewport.prototype.build = function() {
 		this.iframes[i].attributes(new LocationObject(this.iframes[i])).style(new DimensionsObject(this.iframes[i], this)).append();
 	}
 	this.push("build");
+	return this;
 };
 /**
  * @method reset
@@ -55,7 +59,7 @@ Viewport.prototype.build = function() {
  * 
  * @description Resets styles on body and empties it. 
  * 
- * @returns void
+ * @returns Viewport instance
  */
 Viewport.prototype.reset = function() {
 	document.body.innerHTML = "";
@@ -63,6 +67,9 @@ Viewport.prototype.reset = function() {
 	document.body.style.padding = 0;
 	document.body.style.width = "100%";
 	document.body.style.height = "100%"; // ie fix iframe height 100% 
+	
+	this.push("reset");
+	return this;
 };
 /**
  * @method _store
@@ -79,6 +86,28 @@ function _store(iframes) {
 	while (i--) {
 		this.iframes[iframes[i].name] = iframes[i];
 	}
+}
+/**
+ * @method _onresize
+ * @access private
+ * 
+ * @description Resizes iframes on resize event
+ * 
+ * @returns void
+ */
+function _onresize() {
+	var that = this;
+	N.CMS.Events.addDOMListener(window, "resize", function () {
+		var i;
+
+		Viewport.WIDTH = (window.innerWidth || document.documentElement.clientWidth); 
+		Viewport.HEIGHT = (window.innerHeight || document.documentElement.clientHeight);
+		
+		that.next = { top : 0, bottom : 0, left : 0, right : 0 };
+		for (i in that.iframes) {
+			that.iframes[i].style(new DimensionsObject(that.iframes[i], that));
+		}
+	});
 }
 /**
  * @constructor DimensionsObject
@@ -123,7 +152,14 @@ function LocationObject(iframe) {
 		(iframe.config.src.indexOf(Viewport.HASH) !== -1) && (this.src = location.href.split(Viewport.HASH)[1]);
 	}
 }
-
+/**
+ * @method getInstance
+ * @access public static
+ * 
+ * @description get current instance or create new one if not present
+ * 
+ * @returns Viewport instance
+ */
 Viewport.getInstance = function(iframes) {
 	return new Viewport(iframes);
 };

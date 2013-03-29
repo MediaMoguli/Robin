@@ -23,38 +23,29 @@ var iframes = {
 	// Creates left iframe and keeps the instance of the class for later use
 	left : new N.CMS.IFrame({
 		name : "left", 
+		alignment : "left", 
 		src : "left.html", 
-		width: "350px", 
-		height : "100%", 
-		minWidth : "40px"
-	}),
+		width: "350px" 
+	}), 
 	// Creates top iframe and keeps the instance of the class for later use
 	top : new N.CMS.IFrame({
 		name : "top", 
-		src : "top.html", 
-		width : (window.innerWidth || document.documentElement.clientWidth) - 350 + "px", 
-		height : "40px", 
-		top : "0", 
-		left : "350px"
+		alignment : "top", 
+		src : "top.html",  
+		height : "40px" 
 	}), 
 	// Creates bottom iframe and keeps the instance of the class for later use
 	bottom : new N.CMS.IFrame({
 		name : "bottom", 
-		src : "bottom.html", 
-		width : (window.innerWidth || document.documentElement.clientWidth) - 350 + "px", 
-		height : "40px", 
-		bottom : "0", 
-		left : "350px"
+		alignment : "bottom", 
+		src : "bottom.html",  
+		height : "40px" 
 	}), 
 	// Creates content iframe and keeps the instance of the class for later use
 	content : new N.CMS.IFrame({
 		name : "content", 
-		src : "content.html",
-		// comment "src" attribute and uncomment "html" one to see the difference
-		width : (window.innerWidth || document.documentElement.clientWidth) - 350 + "px", 
-		height : (window.innerHeight || document.documentElement.clientHeight) - 80 + "px", 
-		top : "40px", 
-		left : "350px"
+		alignment : "center", 
+		src : location.href
 	})
 };
 
@@ -88,7 +79,7 @@ builder.iframes.right = new N.CMS.IFrame({
 	name : "right", 
 	html : "&lt;h1&gt;I am right iframe&lt;/h1&gt;", 
 	width: "350px", 
-	height : "100%", 
+	height : "200px", 
 	minWidth : "40px", 
 	background : "#fff", 
 	right : "0", 
