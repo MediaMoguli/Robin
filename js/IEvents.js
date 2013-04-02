@@ -1,5 +1,5 @@
 N.plug("IEvents", function() {
-// In order this assigment to work we need to do some extra tests
+// In order this assignment to work we need to do some extra tests
 //Events = N.Events;
 /**
  * @class Events 

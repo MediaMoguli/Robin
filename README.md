@@ -7,7 +7,7 @@
 <strong>API namespace:</strong> <em>N.CMS</em>
 
 <strong>Classes present to the user:</strong><br /> 
-1) <em>N.CMS.Builders</em> - class for building the view of iframes and keeping track of them.
+1) <em>N.CMS.Viewport</em> - class for building the view of iframes and keeping track of them.
  - this class acts as "publisher" in the notion of Publisher-Subscriber pattern.
  
 2) <em>N.CMS.IFrame</em> - class for creating, styling and appending single iframe to the document.
@@ -49,8 +49,8 @@ var iframes = {
 	})
 };
 
-// Instantiates Builder class passing Array of iframe instances
-var builder = new N.CMS.Builder([ iframes.left, iframes.top, iframes.bottom, iframes.content ]);
+// Instantiates Viewport class passing Array of iframe instances
+var builder = new N.CMS.Viewport([ iframes.left, iframes.top, iframes.bottom, iframes.content ]);
 // Accessing top iframe
 builder.iframes.top;
 // Another way of accessing top iframe

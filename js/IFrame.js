@@ -71,7 +71,7 @@ IFrame.prototype.create = function() {
  * @returns IFrame instance
  */
 IFrame.prototype.attributes = function(config) {
-	N.DOM.setAttributes(this.element, new AttributesObject((typeof config !== "undefined") ? N.objectMerge({}, this.config, config) : this.config));
+	N.DOM.setAttributes(this.element, new AttributesObject((typeof config !== "undefined") ? N.objectMerge(this.config, config) : this.config));
 	this.push("attributes");
 	return this;
 };
@@ -84,7 +84,7 @@ IFrame.prototype.attributes = function(config) {
  * @returns IFrame instance
  */
 IFrame.prototype.style = function(config) {
-	N.DOM.setStyle(this.element, new StyleObject((typeof config !== "undefined") ? N.objectMerge({}, config, this.config) : this.config));
+	N.DOM.setStyle(this.element, new StyleObject((typeof config !== "undefined") ? N.objectMerge(this.config, config) : this.config));
 	this.push("style");
 	return this;
 };
@@ -132,6 +132,8 @@ function _onload() {
 function StyleObject(config) {
 	var i = _style.length;
 	this.position = "fixed";
+	this.padding = 0;
+	this.margin = 0;
 	this.border = "none";
 	
 	while (i--) { (_style[i] in config) && (this[_style[i]] = config[_style[i]]); }
@@ -148,7 +150,6 @@ function StyleObject(config) {
 function AttributesObject(config) {
 	var i = _attributes.length;
 	this.frameBorder = "0";
-	//(config.src) && (config.src = (config.src.indexOf));
 		
 	while (i--) { (_attributes[i] in config) && (this[_attributes[i]] = config[_attributes[i]]); }
 }

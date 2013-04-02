@@ -1,23 +1,26 @@
+(function() {
 N.require("DOM.js");
 N.require("Events.js");
+N.require("DragDrop.js");
+N.require("DragDropDirection.js");
 N.require("js/Publisher.js");
 N.require("js/IEvents.js");
 N.require("js/IFrame.js");
 N.require("js/Viewport.js");
 
-N.onready(function() {
-	if (!N.CMS) {
-		// Creating namespace if not created
-		N.namespace("CMS");
+if (!N.CMS) {
+	N.namespace("CMS");		// Creating namespace if not created
+} else {
+	//Check if we have already loaded content (do not load if so). Should serve as !window.name check
+	return false;
+}
+window.onload = function() {
+	N.onready(function() {
 		// Organizing classes under CMS namespace
 		N.CMS.Viewport = N.plugins.Viewport; // Viewport class to create the view
 		N.CMS.IFrame = N.plugins.IFrame; // IFrame class to handle each iframe
 		N.CMS.Events = N.plugins.IEvents; // Events class to handle DOM and custom events
-		N.CMS.content = false;
-	}
-
-	// Check if we have already loaded content (do not load if so). Should serve as !window.name check
-	if (!N.CMS.content) {
+	
 		// Object with iframe instances
 		var iframes = { 
 			// Creates left iframe and keeps the instance of the class for later use
@@ -25,6 +28,15 @@ N.onready(function() {
 				name : "left", 
 				alignment : "left", 
 				src : "left.html", 
+				width: "350px" 
+				//height : "100%", 
+				//minWidth : "40px"
+			}), 
+			// Creates right iframe and keeps the instance of the class for later use
+			right : new N.CMS.IFrame({
+				name : "right", 
+				alignment : "right", 
+				html : "<h1>Right iframe</h1><p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.</p>", 
 				width: "350px" 
 				//height : "100%", 
 				//minWidth : "40px"
@@ -74,33 +86,20 @@ N.onready(function() {
 				//left : "350px"
 			})
 		};
-		// Setting content iframe in the namespace in order to prevent second load
-		N.CMS.content = iframes.content;
 		
 		// Instantiates Viewport class passing Array of iframe instances (commented one is another left sidebar)
-		var builder = new N.CMS.Viewport([ iframes.left, /*iframes.left350,*/ iframes.top, iframes.bottom, iframes.content ]);
+		var builder = new N.CMS.Viewport([ iframes.left, iframes.right, /*iframes.left350,*/ iframes.top, iframes.bottom, iframes.content ]);
 		
-		// Accessing top iframe
-		builder.iframes.top;
-		// Another way of accessing top iframe
-		iframes.top;
-		// Adds listener on builder instance object for "build" event
+		builder.iframes.top; 	// Accessing top iframe
+		iframes.top;			// Another way of accessing top iframe
+		
+		// Adds listener on Viewport instance object for "build" event
 		N.CMS.Events.addEventListener(builder, "build", function() {
 			console.log("View is built");
 		});
-		// Builds the view
-		builder.build();
 		
-		// Adds listener on left iframe instance object for "create" event
-		N.CMS.Events.addEventListener(iframes.left, "create", function() {
-			console.log("Left iframe is created");
-		});
-		// Adds listener on top iframe instance object for "style" event
-		N.CMS.Events.addEventListener(iframes.top, "style", function() {
-			console.log("Top iframe is styled");
-		});
-		// Executes all subscriber callbacks on left iframe for event "create"
-		N.CMS.Events.dispatchEvent(iframes.left, "create");
+		builder.build(); 	// Builds the iframes
+		builder.handles();	// Builds resize handles
 		
 		/* // Another way of dynamically add additional iframes. Uncomment this group to see result
 		 * // Setting iframes this way (without using Viewport.build) requires user to manually determine top, left, width, height
@@ -121,5 +120,6 @@ N.onready(function() {
 		});
 		builder.iframes.right.append();
 		*/
-	}
-});
+	});
+};
+})();

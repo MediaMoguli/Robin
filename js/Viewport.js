@@ -9,6 +9,7 @@ N.extend(Viewport, N.plugins.Publisher);
 var _instance = null;
 Viewport.WIDTH = (window.innerWidth || document.documentElement.clientWidth); 
 Viewport.HEIGHT = (window.innerHeight || document.documentElement.clientHeight);
+Viewport.HANDLE_CLASS = "handle";
 Viewport.HASH = "#!/";
 /**
  * @class Viewport (singleton class)
@@ -29,12 +30,15 @@ function Viewport(iframes) {
  */
 function _Viewport(iframes) {
 	this.Publisher();
+	this.DragDropInstance = new N.plugins.DragDropDirection();
 	this.iframes = {};
 	this.next = { top : 0, bottom : 0, left : 0, right : 0 };
-	this.reset();
-	if (N.isArray(iframes)) { 
+	
+	if (N.isArray(iframes)) {
+		this.reset();
 		_store.call(this, iframes);
 		_onresize.call(this);
+		_ondrag.call(this);
 	}
 };
 /**
@@ -47,10 +51,47 @@ function _Viewport(iframes) {
  */
 Viewport.prototype.build = function() {
 	var i;
+	
 	for (i in this.iframes) {
 		this.iframes[i].attributes(new LocationObject(this.iframes[i])).style(new DimensionsObject(this.iframes[i], this)).append();
 	}
+	_veil();
+	
 	this.push("build");
+	return this;
+};
+/**
+ * @method handles
+ * @access public
+ * 
+ * @description Creates iframes resize handles
+ * 
+ * @returns Viewport instance
+ */
+Viewport.prototype.handles = function() {
+	var i, handle, current;
+	for (i in this.iframes) {
+		current = this.iframes[i];
+		if (current.config.alignment in { "left" : 0, "right" : 0, "top" : 0, "bottom" : 0 }) {
+			handle = N.DOM.createPlus("div", { "class" : Viewport.HANDLE_CLASS + " " + current.config.alignment });
+			N.DOM.setStyle(handle, { border : "1px solid #000", position : "absolute", backgroundColor : "#aaa", cursor : "move", width :"20px", height : "20px", zIndex : 3 });
+		
+			if (current.config.alignment in { "left" : 0, "right" : 0 }) {
+				N.DOM.setStyle(handle, new function() { 
+					this.top = parseInt(current.config.height)/2 + "px"; 
+					this[current.config.alignment] = parseInt(current.config.width) + "px"; 
+				});
+			}
+			if (current.config.alignment in { "top": 0, "bottom" : 0 }) {
+				N.DOM.setStyle(handle, new function() {
+					this[current.config.alignment] = parseInt(current.config.height) + "px"; 
+					this.left = current.element.offsetLeft + parseInt(current.config.width)/2 + "px";
+				});
+			}
+			N.DOM.add(handle, document.body);
+		}
+	}
+	this.push("handles");
 	return this;
 };
 /**
@@ -62,15 +103,29 @@ Viewport.prototype.build = function() {
  * @returns Viewport instance
  */
 Viewport.prototype.reset = function() {
-	document.body.innerHTML = "";
 	document.body.style.margin = 0;
 	document.body.style.padding = 0;
-	document.body.style.width = "100%";
-	document.body.style.height = "100%"; // ie fix iframe height 100% 
+	document.body.style.width = /*Viewport.WIDTH + "px"*/ "100%";
+	document.body.style.height = /*Viewport.HEIGHT + "px"*/ "100%";
+	document.body.innerHTML = "";
 	
 	this.push("reset");
 	return this;
 };
+/**
+ * @method _veil
+ * @access private
+ * 
+ * @description Creates veil "div" to cover document. 
+ * Needed in order to have document filled with something (to fire events)
+ * 
+ * @returns void
+ */
+function _veil() {
+	var div = N.DOM.create("div");
+	N.DOM.setStyle(div, { position : "fixed", top : "0", left : "0", width : "100%", height : "100%" });
+	N.DOM.add(div, document.body);
+}
 /**
  * @method _store
  * @access private
@@ -97,7 +152,7 @@ function _store(iframes) {
  */
 function _onresize() {
 	var that = this;
-	N.CMS.Events.addDOMListener(window, "resize", function () {
+	N.CMS.Events.addDOMListener(window, "resize", function() {
 		var i;
 
 		Viewport.WIDTH = (window.innerWidth || document.documentElement.clientWidth); 
@@ -107,6 +162,27 @@ function _onresize() {
 		for (i in that.iframes) {
 			that.iframes[i].style(new DimensionsObject(that.iframes[i], that));
 		}
+	});
+}
+function _ondrag() {
+	var that = this;
+	N.CMS.Events.addDOMListener(document, "mousedown", function(e) {
+		var target = N.Events.getTarget(e);
+		if (target.className.indexOf(Viewport.HANDLE_CLASS) !== -1) {
+			that.DragDropInstance.box = target;
+			//that.DragDropInstance.direction = (target.className.replace(Viewport.HANDLE_CLASS + " ", "") in { "left" : 0, "right" : 0 }) ? "x" : "y";
+			that.DragDropInstance.mouseMove = (target.className.replace(Viewport.HANDLE_CLASS + " ", "") in { "left" : 0, "right" : 0 }) ? that.DragDropInstance.mouseMoveX : that.DragDropInstance.mouseMoveY; 
+			that.DragDropInstance.open().mouseDown();
+			N.DOM.setStyle(target, { bottom : "auto", right : "auto" });
+		}
+	});
+	N.CMS.Events.addDOMListener(document, "mousemove", function(e) {
+		if (that.DragDropInstance instanceof N.DragDrop) {
+			that.DragDropInstance.mouseMove(e);
+		}
+	});	
+	N.CMS.Events.addDOMListener(document, "mouseup", function(e) {
+		that.DragDropInstance.mouseUp();
 	});
 }
 /**
@@ -122,7 +198,7 @@ function _onresize() {
 function DimensionsObject(iframe, that) {
 	this.height = iframe.config.height || (Viewport.HEIGHT - (that.next.top + that.next.bottom) + "px");
 	this.width = iframe.config.width || (Viewport.WIDTH - (that.next.left + that.next.right) + "px");
-	
+
 	if (iframe.config.alignment === "top" || iframe.config.alignment === "bottom") {
 		this.left = iframe.config.left || (that.next.left + "px");
 		this[iframe.config.alignment] = iframe.config[iframe.config.alignment] || (that.next[iframe.config.alignment] + "px");
