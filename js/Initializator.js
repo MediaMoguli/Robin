@@ -28,7 +28,7 @@ window.onload = function() {
 				name : "left", 
 				alignment : "left", 
 				src : "left.html", 
-				width: "350px" 
+				width: "300px" 
 				//height : "100%", 
 				//minWidth : "40px"
 			}), 
@@ -37,7 +37,7 @@ window.onload = function() {
 				name : "right", 
 				alignment : "right", 
 				html : "<h1>Right iframe</h1><p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.</p>", 
-				width: "350px" 
+				width: "300px" 
 				//height : "100%", 
 				//minWidth : "40px"
 			}), 
@@ -95,7 +95,7 @@ window.onload = function() {
 		
 		// Adds listener on Viewport instance object for "build" event
 		N.CMS.Events.addEventListener(builder, "build", function() {
-			console.log("View is built");
+			//console.log("View is built");
 		});
 		
 		builder.build(); 	// Builds the iframes

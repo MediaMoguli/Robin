@@ -10,12 +10,10 @@ DragDropDirection.prototype.DragDropDirection = function(config) {
 	this.direction = config.direction || "x";
 };
 DragDropDirection.prototype.mouseMove = function(e) {
-	if (this.direction === "x") {
-		DragDropDirection.prototype.mouseMove = DragDropDirection.prototype.mouseMoveX;
-	} else {
-		DragDropDirection.prototype.mouseMove = DragDropDirection.prototype.mouseMoveY;
+	if (this.mouseDownFlag) {
+		this.mouseMove = DragDropDirection.prototype[(this.direction === "x") ? "mouseMoveX" : "mouseMoveY"];
+		return this.mouseMove(e);
 	}
-	return this.mouseMove(e);
 };
 DragDropDirection.prototype.mouseMoveX = function(e) {
 	_getMouseX.call(this, e);
@@ -35,14 +33,14 @@ DragDropDirection.prototype.mouseMoveY = function(e) {
 };
 
 function _getMouseX(e) {
-    var mouseX = (NEEDLE.isIE) ? (event.clientX + document.body.scrollLeft) : e.pageX;
-    this.delta.x = mouseX - this.x;
-    this.x = mouseX;
+    var mouseX = this.mouse(e).x;
+    this.delta.x = mouseX - this.mousePos.x;
+    this.mousePos.x = mouseX;
 };
 function _getMouseY(e) {
-    var mouseY = (NEEDLE.isIE) ? (event.clientY + document.body.scrollTop) : e.pageY;
-    this.delta.y = mouseY - this.y;
-    this.y = mouseY;
+    var mouseY = this.mouse(e).y;
+    this.delta.y = mouseY - this.mousePos.y;
+    this.mousePos.y = mouseY;
 };
 
 return DragDropDirection;

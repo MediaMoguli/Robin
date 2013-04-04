@@ -84,7 +84,7 @@ IFrame.prototype.attributes = function(config) {
  * @returns IFrame instance
  */
 IFrame.prototype.style = function(config) {
-	N.DOM.setStyle(this.element, new StyleObject((typeof config !== "undefined") ? N.objectMerge(this.config, config) : this.config));
+	N.DOM.style(this.element, new StyleObject((typeof config !== "undefined") ? N.objectMerge(this.config, config) : this.config));
 	this.push("style");
 	return this;
 };

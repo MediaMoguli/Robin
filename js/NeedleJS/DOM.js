@@ -19,14 +19,18 @@ DOM.prototype.DOM = function() {};
  * @method create
  * @access public static
  * 
- * @description Creates and returns HTML element by setting or not namespace.
+ * @description Creates HTML element by setting or not namespace, adds attributes and returns it.
  * 
- * @param element String (required)
- * @param ns String (optional)
+ * @param element String (required) - div:http://namespace.com
+ * @param attributes Object (optional)
+ * 
  * @returns HTMLElement
  */
-DOM.create = function(element, ns) {
-	return (typeof ns == "undefined") ? document.createElement(element) : document.createElementNS(ns, element);
+DOM.create = function(element, attributes) {
+	element = element.split(":");
+	element[0] = (!element[1]) ? document.createElement(element[0]) : document.createElementNS(element[1], element[0]);
+	(typeof attributes !== "undefined") && DOM.setAttributes(element[0], attributes, element[1]);
+	return element[0];
 };
 /**
  * @method createTextNode
@@ -41,26 +45,10 @@ DOM.createTextNode = function(element) {
 	return document.createTextNode(element);
 };
 /**
- * @method createPlus
- * @access public static
- * 
- * @description Creates HTML element, sets attributes to it and returns it.
- * 
- * @param element String (required)
- * @param attributes Object (required)
- * @param ns String (optional)
- * @returns HTMLElement
- */
-DOM.createPlus = function(element, attributes, ns) {
-	element = DOM.create(element, ns);
-	DOM.setAttributes(element, attributes, ns);
-	return element;
-};
-/**
  * @method setAttributes
  * @access public static
  * 
- * @description Sets HTML element's attributes by using or not namespace.
+ * @description Sets HTML/SVG/XML element's attributes by using or not namespace.
  * 
  * @param element HTMLElement (required)
  * @param attributes Object (required)
@@ -86,20 +74,22 @@ DOM.setAttributes = function(element, attributes, ns) {
  * @method getAttributes
  * @access public static
  * 
- * @description Returns attributes of an HTML element.
+ * @description Returns attributes of an HTML/SVG/XML element.
  * 
  * @param element HTMLElement (required)
  * @param params String|Object (required)
  * @returns Array (name=value)
  */
-DOM.getAttributes = function(element, params) {
+DOM.getAttributes = function(element, params, ns) {
 	if (typeof params === "string") {
-		return element.attributes[params];
+		return (typeof ns == "undefined") ? element.attributes[params] : element.getAttributeNS(ns, params);
 		
 	} else if (typeof params === "object") {
 		var i = params.length, collection = {};
-		while (i--) {
-			collection[params[i]] = element.attributes[params[i]];
+		if (typeof ns == "undefined") {
+			while (i--) { collection[params[i]] = element.attributes[params[i]]; }
+		} else {
+			while (i--) { collection[params[i]] = element.getAttributeNS(ns, params[i]); }
 		}
 		return collection;
 	}
@@ -127,7 +117,7 @@ DOM.removeAttributes = function(element, params) {
 	return DOM;
 };
 /**
- * @method setStyle
+ * @method style
  * @access public static
  * 
  * @description Sets style of an HTML element.
@@ -136,7 +126,7 @@ DOM.removeAttributes = function(element, params) {
  * @param properties Object (required)
  * @returns false|DOM class
  */
-DOM.setStyle = function(element, properties) {
+DOM.style = function(element, properties) {
 	if (typeof properties === "object") {
 		var style = element.style, i;
 		for (i in properties) {
@@ -341,7 +331,7 @@ DOM.getElementsByAttribute = function(attribute, value, context, tag) {
 function _getElementByAttribute(element, attribute, value, returnElements) {
 	// getAttribute instead of element[attribute], because of datasets
 	attribute = element.getAttribute(attribute);
-	if (attribute != "" && attribute != null) {
+	if (attribute != "") {
 		if (value != null) {
 			new RegExp("^([\\d\\D\\S]+\\s)*" + value + "(\\s+|\\s+[\\d\\D\\S]+)*$").test(attribute) && returnElements.push(element);
 		} else {
