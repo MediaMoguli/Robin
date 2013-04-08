@@ -36,8 +36,6 @@ Viewport.prototype.Viewport = function(iframes) {
 	
 	if (N.isArray(iframes)) {
 		_store.call(this, iframes);
-		_onresize.call(this);
-		_ondrag.call(this);
 	}
 };
 /**
@@ -153,6 +151,75 @@ Viewport.prototype.resize = function() {
 	return this;
 };
 /**
+ * @method onresize
+ * @access public
+ * 
+ * @description Resizes iframes on window resize. 
+ * 
+ * @returns void
+ */
+Viewport.prototype.onresize = function() {
+	var i;
+	this.next = { top : 0, bottom : 0, left : 0, right : 0 };
+	Viewport.WIDTH = (window.innerWidth || document.documentElement.clientWidth); 
+	Viewport.HEIGHT = (window.innerHeight || document.documentElement.clientHeight);
+	
+	for (i in this.iframes) {
+		if (this.iframes[i].config.alignment in  {"top" : 0, "bottom" : 0, "center" : 0 }) {
+			this.iframes[i].config.width = 0;
+			(this.iframes[i].config.alignment === "center") && (this.iframes[i].config.height = 0);
+		}
+		this.iframes[i].style(new DimensionsObject(this.iframes[i], this));
+		(this.iframes[i].config.alignment !== "center") && N.DOM.style(N.DOM.getElementsByClassName(Viewport.HANDLE_CLASS + " " + this.iframes[i].config.alignment)[0], new HandlesPositionObject(this.iframes[i], this));
+	}
+};
+/**
+ * @method ongrab
+ * @access public
+ * 
+ * @description Mousedown on handle. 
+ * @param e Object - Event object
+ * @param target HTMLElement - handle itself 
+ * 
+ * @returns void
+ */
+Viewport.prototype.ongrab = function(e, target) {
+	this.veil.style.visibility = "visible";
+	this.DragDropInstance = new N.plugins.DragDropDirection({ 
+		box : target, 
+		direction : (target.className.replace(Viewport.HANDLE_CLASS + " ", "") in { "left" : 0, "right" : 0 }) ? "x" : "y"
+	});
+	this.DragDropInstance.open().mouseDown(e);
+	N.DOM.style(target, { bottom : "auto", right : "auto" });
+};
+/**
+ * @method ondrag
+ * @access public
+ * 
+ * @description Dragging handle. 
+ * @param e Object - Event object
+ * 
+ * @returns void
+ */
+Viewport.prototype.ondrag = function(e) {
+	if (this.DragDropInstance instanceof N.DragDrop) {
+		this.DragDropInstance.mouseMove(e);
+		(this.DragDropInstance.mouseDownFlag) && this.resize();
+	}
+};
+/**
+ * @method ondrop
+ * @access public
+ * 
+ * @description Drop handle. 
+ * 
+ * @returns void
+ */
+Viewport.prototype.ondrop = function() {
+	this.veil.style.visibility = "hidden";
+	this.DragDropInstance.mouseUp();
+};
+/**
  * @method _veil
  * @access private
  * 
@@ -182,66 +249,6 @@ function _store(iframes) {
 	while (i--) {
 		this.iframes[iframes[i].name] = iframes[i];
 	}
-}
-/**
- * @method _onresize
- * @access private
- * 
- * @description Resizes iframes on resize event
- * 
- * @returns void
- */
-function _onresize() {
-	var that = this;
-	N.CMS.Events.addDOMListener(window, "resize", function() {
-		var i;
-
-		Viewport.WIDTH = (window.innerWidth || document.documentElement.clientWidth); 
-		Viewport.HEIGHT = (window.innerHeight || document.documentElement.clientHeight);
-		
-		that.next = { top : 0, bottom : 0, left : 0, right : 0 };
-		for (i in that.iframes) {
-			if (that.iframes[i].config.alignment in  {"top" : 0, "bottom" : 0, "center" : 0 }) {
-				that.iframes[i].config.width = 0;
-				(that.iframes[i].config.alignment === "center") && (that.iframes[i].config.height = 0);
-			}
-			that.iframes[i].style(new DimensionsObject(that.iframes[i], that));
-			(that.iframes[i].config.alignment !== "center") && N.DOM.style(N.DOM.getElementsByClassName(Viewport.HANDLE_CLASS + " " + that.iframes[i].config.alignment)[0], new HandlesPositionObject(that.iframes[i], this));
-		}
-	});
-}
-/**
- * @method _ondrag
- * @access private
- * 
- * @description Setting draggable handles to resize
- * 
- * @returns void
- */
-function _ondrag() {
-	var that = this;
-	N.CMS.Events.addDOMListener(document, "mousedown", function(e) {
-		var target = N.Events.getTarget(e);
-		if (target.className.indexOf(Viewport.HANDLE_CLASS) !== -1) {
-			that.veil.style.visibility = "visible";
-			that.DragDropInstance = new N.plugins.DragDropDirection({ 
-				box : target, 
-				direction : (target.className.replace(Viewport.HANDLE_CLASS + " ", "") in { "left" : 0, "right" : 0 }) ? "x" : "y"
-			});
-			that.DragDropInstance.open().mouseDown(e);
-			N.DOM.style(target, { bottom : "auto", right : "auto" });
-		}
-	});
-	N.CMS.Events.addDOMListener(document, "mousemove", function(e) {
-		if (that.DragDropInstance instanceof N.DragDrop) {
-			that.DragDropInstance.mouseMove(e);
-			(that.DragDropInstance.mouseDownFlag) && that.resize();
-		}
-	});	
-	N.CMS.Events.addDOMListener(document, "mouseup", function(e) {
-		that.veil.style.visibility = "hidden";
-		that.DragDropInstance.mouseUp();
-	});
 }
 /**
  * @constructor DimensionsObject

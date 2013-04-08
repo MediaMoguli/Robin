@@ -7,6 +7,7 @@ N.require("js/Publisher.js");
 N.require("js/IEvents.js");
 N.require("js/IFrame.js");
 N.require("js/Viewport.js");
+N.require("js/Controller.js");
 
 if (!N.CMS) {
 	N.namespace("CMS");		// Creating namespace if not created
@@ -89,6 +90,7 @@ window.onload = function() {
 		
 		// Instantiates Viewport class passing Array of iframe instances (commented one is another left sidebar)
 		var builder = new N.CMS.Viewport([ iframes.left, iframes.right, /*iframes.left350,*/ iframes.top, iframes.bottom, iframes.content ]);
+		new N.plugins.Controller(builder).init();
 		
 		builder.iframes.top; 	// Accessing top iframe
 		iframes.top;			// Another way of accessing top iframe
