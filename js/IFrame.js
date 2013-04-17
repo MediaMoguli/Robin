@@ -135,6 +135,7 @@ function StyleObject(config) {
 	this.padding = 0;
 	this.margin = 0;
 	this.border = "none";
+	this.zIndex = 1;
 	
 	while (i--) { (_style[i] in config) && (this[_style[i]] = config[_style[i]]); }
 }

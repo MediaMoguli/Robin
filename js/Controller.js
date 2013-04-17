@@ -1,4 +1,5 @@
 N.plug("Controller", function() {
+	
 var _viewInstance = null;
 function Controller(viewInstance) {
 	this.Controller(viewInstance);
@@ -18,7 +19,7 @@ Controller.prototype.uninit = function(viewInstance) {
 	N.CMS.Events.removeDOMListener(document, "mousemove", this.drag);
 	N.CMS.Events.removeDOMListener(document, "mouseup", this.drop);
 };
-Controller.prototype.resize = function(e) {
+Controller.prototype.resize = function() {
 	_viewInstance.onresize();
 };
 Controller.prototype.grab = function(e) {

@@ -107,7 +107,7 @@ Viewport.prototype.reset = function() {
 Viewport.prototype.resize = function() {
 	var alignment = this.DragDropInstance.box.className.replace(Viewport.HANDLE_CLASS + " ", ""), i;
 	if (alignment === "left") {
-		this.iframes.left.element.style.width = this.DragDropInstance.objectWindow.x + "px";
+		this.iframes.left.element.style.width = parseInt(this.iframes.left.element.style.width) + this.DragDropInstance.delta.x + "px";
 		
 		for (i in this.iframes) {
 			if (this.iframes[i].config.alignment in { "top" : 0, "bottom" : 0, "center" : 0 }) {
@@ -184,7 +184,7 @@ Viewport.prototype.onresize = function() {
  * @returns void
  */
 Viewport.prototype.ongrab = function(e, target) {
-	this.veil.style.visibility = "visible";
+	this.veil.style.display = "block";
 	this.DragDropInstance = new N.plugins.DragDropDirection({ 
 		box : target, 
 		direction : (target.className.replace(Viewport.HANDLE_CLASS + " ", "") in { "left" : 0, "right" : 0 }) ? "x" : "y"
@@ -202,9 +202,9 @@ Viewport.prototype.ongrab = function(e, target) {
  * @returns void
  */
 Viewport.prototype.ondrag = function(e) {
-	if (this.DragDropInstance instanceof N.DragDrop) {
+	if (this.DragDropInstance.mouseDownFlag) {
 		this.DragDropInstance.mouseMove(e);
-		(this.DragDropInstance.mouseDownFlag) && this.resize();
+		this.resize();
 	}
 };
 /**
@@ -216,7 +216,7 @@ Viewport.prototype.ondrag = function(e) {
  * @returns void
  */
 Viewport.prototype.ondrop = function() {
-	this.veil.style.visibility = "hidden";
+	this.veil.style.display = "none";
 	this.DragDropInstance.mouseUp();
 };
 /**
@@ -230,7 +230,7 @@ Viewport.prototype.ondrop = function() {
  */
 function _veil() {
 	this.veil = N.DOM.create("div");
-	N.DOM.style(this.veil, { position : "fixed", top : "0", left : "0", width : "100%", height : "100%", visibility : "hidden" });
+	N.DOM.style(this.veil, { position : "absolute", top : "0", left : "0", width : "100%", height : "100%", display : "none", zIndex : 2 });
 	N.DOM.add(this.veil, document.body);
 }
 /**
@@ -243,8 +243,22 @@ function _veil() {
  * @returns void
  */
 function _store(iframes) {
-	var i = iframes.length;
+	var i = iframes.length, left = [], right = [], top = [], bottom = [], content = [];
 	
+	while (i--) {
+		if (iframes[i].config.alignment === "left") {
+			left.push(iframes[i]);
+		} else if (iframes[i].config.alignment === "right") {
+			right.push(iframes[i]);
+		} else if (iframes[i].config.alignment === "top") {
+			top.push(iframes[i]);
+		} else if (iframes[i].config.alignment === "bottom") {
+			bottom.push(iframes[i]);
+		} else if (iframes[i].config.alignment === "center") {
+			content.push(iframes[i]);
+		}
+	}
+	iframes = left.concat(right.concat(top.concat(bottom.concat(content)))); i = iframes.length;
 	iframes.reverse();
 	while (i--) {
 		this.iframes[iframes[i].name] = iframes[i];

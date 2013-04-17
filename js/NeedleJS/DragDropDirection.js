@@ -16,16 +16,16 @@ DragDropDirection.prototype.mouseMove = function(e) {
 	}
 };
 DragDropDirection.prototype.mouseMoveX = function(e) {
-	_getMouseX.call(this, e);
     if (this.mouseDownFlag) {
+    	_getMouseX.call(this, e);
     	this.box.style.left = this.objectWindow.x + this.delta.x + "px";
         this.objectWindow.x += this.delta.x;
     }
     return this;
 };
 DragDropDirection.prototype.mouseMoveY = function(e) {
-	_getMouseY.call(this, e);
     if (this.mouseDownFlag) {
+    	_getMouseY.call(this, e);
     	this.box.style.top = this.objectWindow.y + this.delta.y + "px";
         this.objectWindow.y += this.delta.y;
     }
