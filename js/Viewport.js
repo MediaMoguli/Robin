@@ -1,5 +1,5 @@
 N.plug("Viewport", function() {
-/**
+/** 
  * class Viewport extends class Publisher
  * @description this allows Viewport methods to have subscribers and be executed as custom events
  * 

@@ -23,6 +23,7 @@ Controller.prototype.resize = function() {
 	_viewInstance.onresize();
 };
 Controller.prototype.grab = function(e) {
+	N.Events.preventDefault(e);
 	var target = N.Events.getTarget(e);
 	(target.className.indexOf(_viewInstance.constructor.HANDLE_CLASS) !== -1) && _viewInstance.ongrab(e, target);
 };
